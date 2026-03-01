@@ -1207,9 +1207,11 @@ async def dicePlay(request : Request,SessionId : str = Cookie(None)):
         if not redis.set("Dice" + SessionId, 1,nx=True,px=250):
             return JSONResponse({"error": "Error playing dice."})
         
-
         newDocument = mainCollection.find_one_and_update(
-            {"username": username["username"]},
+            {
+                "username": username["username"], 
+                "balance": {"$gte": betamount}  
+            },
             {"$inc": {"balance": -betamount}},
             return_document=ReturnDocument.AFTER,
         )
