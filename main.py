@@ -1,4 +1,4 @@
-from fastapi import FastAPI, Form, Request, Response, Cookie,status,Query
+from fastapi import FastAPI, Form, Request, Response, Cookie, status, Query, Header
 from fastapi.responses import HTMLResponse,RedirectResponse,JSONResponse,FileResponse
 from fastapi.templating import Jinja2Templates
 from upstash_redis import Redis
@@ -110,16 +110,8 @@ def giveCancelCoinflipItems(Field : str,document,SessionId):
     )
 
 def getMarketplaceData():
-    MONGO_URI = os.environ["MONGOINVENTORY_CONNECTIONURI"]
-    NewClientInstance = MongoClient(
-        MONGO_URI,
-        serverSelectionTimeoutMS=10000,
-        tls=True,
-        tlsCAFile=certifi.where()
-    )
-
-    database = NewClientInstance["cool"]
-    collection = database["cp"]
+    database = Mongo_Client["Catalog"]
+    collection = database["Items"]
     try:
         MarketplaceData = collection.find(
             {},
@@ -398,11 +390,10 @@ def GetActiveCoinflips(request : Request,SessionId: str = Cookie(None)):
     except Exception as error:
         return templates.TemplateResponse(
             "coinflip.html",
-            {"request": request, "error": str(error),"X-CSRF-Token":CSRFToken)},
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            {"request": request, "error": str(error), "X-CSRF-Token": CSRFToken},
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR
         )
-
-
+        
 @app.get("/", response_class=HTMLResponse)
 @limiter.limit("50/minute")
 def readroot(request: Request):
@@ -701,16 +692,9 @@ def depositearnings(request : Request,data: DepositItems):
     except Exception as e:
         return JSONResponse({"error": f"{str(e)}"}, status_code=400)
     
-    MONGO_URI = os.environ["MONGOINVENTORY_CONNECTIONURI"]
-    client = MongoClient(
-        MONGO_URI,
-        serverSelectionTimeoutMS=10000,
-        tls=True,
-        tlsCAFile=certifi.where()
-    )
 
-    database = client["cool"]
-    collection = database["cp"]
+    database = Mongo_Client["Catalog"]
+    collection = database["Items"]
 
     if data.Deposit:
         getInventoryUrl =  "https://express-js-on-vercel-blue-sigma.vercel.app/GetInventory?id=" + str(data.userid)
@@ -2069,4 +2053,3 @@ async def JoinMatch(request: Request, SessionId: str = Cookie(None)):
         return JSONResponse({"error" : str(e)})
 
     return JSONResponse({"success": True})
-
