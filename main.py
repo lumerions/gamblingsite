@@ -1141,6 +1141,9 @@ def gameclick(request: Request,data: MinesClick, SessionId: str = Cookie(None)):
         tilescleared += 1
 
         if Game == "Towers":
+            if tilescleared:
+                return JSONResponse({})
+        
             mine_multiplier = ((len(mines) / 23) ** 1.5) + 0.1
             payout = bet_amount * (row + 1) * mine_multiplier * 0.3
             payout = math.floor(payout * 0.98)
