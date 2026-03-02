@@ -234,7 +234,7 @@ def readlogin(request: Request):
 def loadmines(request: Request):
     return CheckIfUserIsLoggedIn(request,"register.html","mines.html")
 
-@app.get("/towers",response_class =  HTMLResponse)
+@app.get("/towererterers",response_class =  HTMLResponse)
 @limiter.limit("50/minute")
 def towers(request: Request):
     return CheckIfUserIsLoggedIn(request,"register.html","towers.html")
