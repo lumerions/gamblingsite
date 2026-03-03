@@ -234,7 +234,7 @@ def readlogin(request: Request):
 def loadmines(request: Request):
     return CheckIfUserIsLoggedIn(request,"register.html","mines.html")
 
-@app.get("/towererterers",response_class =  HTMLResponse)
+@app.get("/towers",response_class =  HTMLResponse)
 @limiter.limit("50/minute")
 def towers(request: Request):
     return CheckIfUserIsLoggedIn(request,"register.html","towers.html")
@@ -1141,10 +1141,7 @@ def gameclick(request: Request,data: MinesClick, SessionId: str = Cookie(None)):
         tilescleared += 1
 
         if Game == "Towers":
-            if tilescleared:
-                return JSONResponse({})
-        
-            mine_multiplier = ((len(mines) / 23) ** 1.5) + 0.1
+            mine_multiplier = ((len(mines) / 23) ** 1.2) + 0.1
             payout = bet_amount * (row + 1) * mine_multiplier * 0.3
             payout = math.floor(payout * 0.98)
             payoutset = int(CashoutAvailable) + int(payout)
